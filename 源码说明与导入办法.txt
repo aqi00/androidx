@@ -18,7 +18,7 @@
 修改完毕，重启Android Studio，再次打开后AS就会自动重新编译了。
 
 四、如何以项目形式导入本书源码
-访问源码的github主页https://github.com/aqi00/android2，单击页面右边的绿色按钮“Clone or download”，浏览器会自动下载压缩文件android2-master.zip，下载完成后解压出来android2-master文件夹。然后打开Android Studio，依次选择菜单“File”——“Open”，在弹出的文件选择对话框里选中android2-master目录，Android Studio就会开始加载整个项目。
+访问源码的github主页https://github.com/aqi00/androidx，单击页面右边的绿色按钮“Clone or download”，浏览器会自动下载压缩文件androidx-master.zip，下载完成后解压出来androidx-master文件夹。然后打开Android Studio，依次选择菜单“File”——“Open”，在弹出的文件选择对话框里选中androidx-master目录，Android Studio就会开始加载整个项目。
 加载过程如果提示错误“Invalid VCS root mappings”，那么需要依次选择菜单“File”——“Settings”——“Version Control”，删除窗口右上角标红的目录（删除办法：先选择标红的目录名称，再单击右上角的减号按钮“-”）。
 另外注意项目文件夹下面的local.properties，在导入源码之前，要先把该文件里面的ndk.dir改为读者电脑上的NDK安装路径，把sdk.dir改为读者电脑上的SDK安装路径。
 
