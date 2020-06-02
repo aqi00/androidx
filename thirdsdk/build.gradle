@@ -20,14 +20,7 @@ android {
 }
 
 dependencies {
-    //implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
     testImplementation 'junit:junit:4.12'
     implementation 'androidx.appcompat:appcompat:1.0.0'
-
-    implementation files('libs/alipaySdk-20161129.jar')
-    implementation files('libs/AMap2DMap_2.9.3_AMapSearch_3.6.1_AMapLocation_3.2.0_20161205.jar')
-    implementation files('libs/BaiduLBS_Android.jar')
-    implementation files('libs/Msc.jar')
-    implementation files('libs/open_sdk_r5509.jar')
-    implementation files('libs/Sunflower.jar')
 }
