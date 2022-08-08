@@ -21,7 +21,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13'
     implementation 'androidx.appcompat:appcompat:1.0.0'
     //gson库各版本见 https://mvnrepository.com/artifact/com.google.code.gson/gson
     implementation "com.google.code.gson:gson:2.8.6"
