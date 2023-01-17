@@ -19,11 +19,11 @@ public class CircleAnimation extends RelativeLayout {
     private int mEndAngle = 270; // 终止角度
     private int mFrontColor = 0xffff0000; // 前景颜色
     private float mFrontLine = 10; // 前景线宽
-    private Style mFrontStyle = Style.STROKE; // 前景风格。STROK表示空心，FILL表示实心
+    private Style mFrontStyle = Style.STROKE; // 前景风格。STROKE表示空心，FILL表示实心
     private FrontView mFrontView; // 前景视图
     private int mShadeColor = 0xffeeeeee; // 阴影颜色
     private float mShadeLine = 10; // 阴影线宽
-    private Style mShadeStyle = Style.STROKE; // 阴影风格。STROK表示空心，FILL表示实心
+    private Style mShadeStyle = Style.STROKE; // 阴影风格。STROKE表示空心，FILL表示实心
     private ShadeView mShadeView; // 阴影视图
     private int mRate = 2; // 每次绘制的递增角度
     private int mDrawTimes; // 总共要绘制的次数
@@ -101,7 +101,7 @@ public class CircleAnimation extends RelativeLayout {
             paint.setDither(true); // 设置画笔为防抖动
             paint.setColor(mShadeColor); // 设置画笔的颜色
             paint.setStrokeWidth(mShadeLine); // 设置画笔的线宽
-            paint.setStyle(mShadeStyle); // 设置画笔的类型。STROK表示空心，FILL表示实心
+            paint.setStyle(mShadeStyle); // 设置画笔的类型。STROKE表示空心，FILL表示实心
         }
 
         @Override
@@ -124,7 +124,7 @@ public class CircleAnimation extends RelativeLayout {
             paint.setDither(true); // 设置画笔为防抖动
             paint.setColor(mFrontColor); // 设置画笔的颜色
             paint.setStrokeWidth(mFrontLine); // 设置画笔的线宽
-            paint.setStyle(mFrontStyle); // 设置画笔的类型。STROK表示空心，FILL表示实心
+            paint.setStyle(mFrontStyle); // 设置画笔的类型。STROKE表示空心，FILL表示实心
             //paint.setStrokeJoin(Paint.Join.ROUND); // 设置画笔的接洽点类型。影响矩形直角的外轮廓
             paint.setStrokeCap(Paint.Cap.ROUND); // 设置画笔的笔刷类型，影响画笔的始末端。ROUND表示圆角
         }
