@@ -109,7 +109,7 @@ public class TurnSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         paint.setAntiAlias(true); // 设置画笔为无锯齿
         paint.setColor(color); // 设置画笔的颜色
         paint.setStrokeWidth(10); // 设置画笔的线宽
-        paint.setStyle(Style.FILL); // 设置画笔的类型。STROK表示空心，FILL表示实心
+        paint.setStyle(Style.FILL); // 设置画笔的类型。STROKE表示空心，FILL表示实心
         return paint;
     }
 

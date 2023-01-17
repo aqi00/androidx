@@ -28,7 +28,7 @@ public class TurnTextureView extends TextureView implements SurfaceTextureListen
         mPaint.setAntiAlias(true); // 设置画笔为无锯齿
         mPaint.setColor(Color.RED); // 设置画笔的颜色
         mPaint.setStrokeWidth(10); // 设置画笔的线宽
-        mPaint.setStyle(Style.FILL); // 设置画笔的类型。STROK表示空心，FILL表示实心
+        mPaint.setStyle(Style.FILL); // 设置画笔的类型。STROKE表示空心，FILL表示实心
     }
 
     @SuppressLint("DrawAllocation")
