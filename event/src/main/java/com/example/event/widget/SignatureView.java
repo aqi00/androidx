@@ -60,7 +60,7 @@ public class SignatureView extends View {
         mPaint = new Paint(); // 创建新画笔
         mPaint.setAntiAlias(true); //设置画笔为无锯齿
         mPaint.setStrokeWidth(mStrokeWidth); // 设置画笔的线宽
-        mPaint.setStyle(Paint.Style.STROKE); // 设置画笔的类型。STROK表示空心，FILL表示实心
+        mPaint.setStyle(Paint.Style.STROKE); // 设置画笔的类型。STROKE表示空心，FILL表示实心
         mPaint.setColor(mPaintColor); // 设置画笔的颜色
         mPath = new Path(); // 创建新路径
         // 开启当前视图的绘图缓存
@@ -134,7 +134,7 @@ public class SignatureView extends View {
                 mPos.firstX = event.getX();
                 mPos.firstY = event.getY();
                 break;
-            case MotionEvent.ACTION_UP: // 手指松开
+            case MotionEvent.ACTION_UP: // 手指提起
                 // 在画布上绘制指定路径线条
                 mCanvas.drawPath(mPath, mPaint);
                 mPath.reset();
