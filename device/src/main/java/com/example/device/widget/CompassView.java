@@ -35,6 +35,7 @@ public class CompassView extends View {
     private Bitmap mSatelliteChina; // 中国北斗卫星的图标
     private Bitmap mSatelliteAmerica; // 美国GPS卫星的图标
     private Bitmap mSatelliteRussia; // 俄罗斯格洛纳斯卫星的图标
+    private Bitmap mSatelliteEurope; // 欧洲伽利略卫星的图标
     private Bitmap mSatelliteOther; // 其它国家卫星的图标
     private Map<Integer, Satellite> mapSatellite = new HashMap<Integer, Satellite>(); // 卫星分布映射
     private int mScaleLength = 25; // 刻度线的长度
@@ -86,6 +87,8 @@ public class CompassView extends View {
         mSatelliteAmerica = BitmapFactory.decodeResource(getResources(), R.drawable.satellite_america);
         // 从资源图片中获取俄罗斯格洛纳斯卫星的图标
         mSatelliteRussia = BitmapFactory.decodeResource(getResources(), R.drawable.satellite_russia);
+        // 从资源图片中获取欧洲伽利略卫星的图标
+        mSatelliteEurope = BitmapFactory.decodeResource(getResources(), R.drawable.satellite_europe);
         // 从资源图片中获取其它国家卫星的图标
         mSatelliteOther = BitmapFactory.decodeResource(getResources(), R.drawable.satellite_other);
     }
@@ -144,15 +147,16 @@ public class CompassView extends View {
         for (Map.Entry<Integer, Satellite> item_map : mapSatellite.entrySet()) {
             Satellite item = item_map.getValue();
             Bitmap bitmap;
-            if (item.nation.equals("中国")) { // 北斗卫星
+            if (item.name.equals("BEIDOU")) { // 北斗卫星
                 bitmap = mSatelliteChina;
-            } else if (item.nation.equals("美国")) { // GPS卫星
+            } else if (item.name.equals("GPS") || item.name.equals("SBAS")) { // GPS卫星
                 bitmap = mSatelliteAmerica;
-            } else if (item.nation.equals("俄罗斯")) { // 格洛纳斯卫星
+            } else if (item.name.equals("GLONASS")) { // 格洛纳斯卫星
                 bitmap = mSatelliteRussia;
-            } else if (!item.nation.equals("")) { // 其它卫星
+            } else if (item.name.equals("GALILEO")) { // 伽利略卫星
+                bitmap = mSatelliteEurope;
+            } else if (!item.name.equals("")) { // 其他卫星
                 bitmap = mSatelliteOther;
-                Log.d(TAG, "Other seq="+item.seq);
             } else {
                 continue;
             }
@@ -197,22 +201,22 @@ public class CompassView extends View {
     }
 
     // 根据半径、角度、线长，计算该点的横坐标
-    private float getXpos(int radius, int angle, double length) {
+    private float getXpos(int radius, float angle, double length) {
         return (float) (radius + getCos(angle) * length);
     }
 
     // 根据半径、角度、线长，计算该点的纵坐标
-    private float getYpos(int radius, int angle, double length) {
+    private float getYpos(int radius, float angle, double length) {
         return (float) (radius + getSin(angle) * length);
     }
 
     // 获得指定角度的正弦值
-    private double getSin(int angle) {
+    private double getSin(float angle) {
         return Math.sin(Math.PI * angle / 180.0);
     }
 
     // 获得指定角度的余弦值
-    private double getCos(int angle) {
+    private double getCos(float angle) {
         return Math.cos(Math.PI * angle / 180.0);
     }
 

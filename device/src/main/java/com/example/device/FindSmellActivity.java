@@ -13,13 +13,17 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
+import android.location.GnssStatus;
 import android.location.GpsSatellite;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
@@ -77,7 +81,9 @@ public class FindSmellActivity extends AppCompatActivity {
         String bestProvider = mLocationMgr.getBestProvider(mCriteria, true);
         if (mLocationMgr.isProviderEnabled(bestProvider)) {  // 定位提供者当前可用
             mLocationType = bestProvider;
-            beginLocation(bestProvider);
+            //beginLocation(bestProvider); // 开始定位
+            // 必须使用卫星定位才能找到天上的导航卫星
+            beginLocation(LocationManager.GPS_PROVIDER); // 开始定位
             isLocationEnable = true;
         } else { // 定位提供者暂不可用
             isLocationEnable = false;
@@ -111,9 +117,47 @@ public class FindSmellActivity extends AppCompatActivity {
         // 获取最后一次成功定位的位置信息
         Location location = mLocationMgr.getLastKnownLocation(method);
         setLocationText(location);
-        // 给定位管理器添加导航状态监听器
-        mLocationMgr.addGpsStatusListener(mStatusListener);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // 注册全球导航卫星系统的状态监听器
+            mLocationMgr.registerGnssStatusCallback(mGnssStatusListener, null);
+        } else {
+            // 给定位管理器添加导航状态监听器
+            mLocationMgr.addGpsStatusListener(mStatusListener);
+        }
     }
+
+    private String[] mSystemArray = new String[] {"UNKNOWN", "GPS", "SBAS",
+            "GLONASS", "QZSS", "BEIDOU", "GALILEO", "IRNSS"};
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    // 定义一个GNSS状态监听器
+    private GnssStatus.Callback mGnssStatusListener = new GnssStatus.Callback() {
+        @Override
+        public void onStarted() {}
+
+        @Override
+        public void onStopped() {}
+
+        @Override
+        public void onFirstFix(int ttffMillis) {}
+
+        // 在卫星导航系统的状态变更时触发
+        @Override
+        public void onSatelliteStatusChanged(GnssStatus status) {
+            mapSatellite.clear();
+            for (int i=0; i<status.getSatelliteCount(); i++) {
+                Log.d(TAG, "i="+i+",getSvid="+status.getSvid(i)+",getConstellationType="+status.getConstellationType(i));
+                Satellite item = new Satellite(); // 创建一个卫星信息对象
+                item.signal = status.getCn0DbHz(i); // 获取卫星的信号
+                item.elevation = status.getElevationDegrees(i); // 获取卫星的仰角
+                item.azimuth = status.getAzimuthDegrees(i); // 获取卫星的方位角
+                item.time = DateUtil.getNowDateTime(); // 获取当前时间
+                int systemType = status.getConstellationType(i); // 获取卫星的类型
+                item.name = mSystemArray[systemType];
+                mapSatellite.put(i, item);
+            }
+            cv_satellite.setSatelliteMap(mapSatellite); // 设置卫星浑天仪
+        }
+    };
 
     // 定义一个位置变更监听器
     private LocationListener mLocationListener = new LocationListener() {
@@ -146,8 +190,13 @@ public class FindSmellActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         if (mLocationMgr != null) {
-            // 移除定位管理器的导航状态监听器
-            mLocationMgr.removeGpsStatusListener(mStatusListener);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                // 注销全球导航卫星系统的状态监听器
+                mLocationMgr.unregisterGnssStatusCallback(mGnssStatusListener);
+            } else {
+                // 移除定位管理器的导航状态监听器
+                mLocationMgr.removeGpsStatusListener(mStatusListener);
+            }
             // 移除定位管理器的位置变更监听器
             mLocationMgr.removeUpdates(mLocationListener);
         }
@@ -159,50 +208,50 @@ public class FindSmellActivity extends AppCompatActivity {
 
         // 在卫星导航系统的状态变更时触发
         public void onGpsStatusChanged(int event) {
-            // 获取卫星定位的状态信息
-            GpsStatus gpsStatus = mLocationMgr.getGpsStatus(null);
-            switch (event) {
-                case GpsStatus.GPS_EVENT_SATELLITE_STATUS: // 周期的报告卫星状态
-                    // 得到所有收到的卫星的信息，包括 卫星的高度角、方位角、信噪比、和伪随机号（及卫星编号）
-                    Iterable<GpsSatellite> satellites = gpsStatus.getSatellites();
-                    for (GpsSatellite satellite : satellites) {
-                        /*
-                         * satellite.getElevation(); //卫星的仰角 (卫星的高度)
-                         * satellite.getAzimuth(); //卫星的方位角
-                         * satellite.getSnr(); //卫星的信噪比
-                         * satellite.getPrn(); //卫星的伪随机码，可以认为就是卫星的编号
-                         * satellite.hasAlmanac(); //卫星是否有年历表
-                         * satellite.hasEphemeris(); //卫星是否有星历表
-                         * satellite.usedInFix(); //卫星是否被用于近期的GPS修正计算
-                         */
-                        Satellite item = new Satellite();
-                        item.seq = satellite.getPrn();
-                        item.signal = Math.round(satellite.getSnr());
-                        item.elevation = Math.round(satellite.getElevation());
-                        item.azimuth = Math.round(satellite.getAzimuth());
-                        item.time = DateUtil.getNowDateTime();
-                        if (item.seq <= 64 || (item.seq >= 120 && item.seq <= 138)) {
-                            item.nation = "美国";
-                            item.name = "GPS";
-                        } else if (item.seq >= 201 && item.seq <= 237) {
-                            item.nation = "中国";
-                            item.name = "北斗";
-                        } else if (item.seq >= 65 && item.seq <= 89) {
-                            item.nation = "俄罗斯";
-                            item.name = "格洛纳斯";
-                        } else {
-                            Log.d(TAG, "Other seq="+item.seq+", signal="+item.signal+", elevation="+item.elevation+", azimuth="+item.azimuth);
-                            item.nation = "其他";
-                            item.name = "未知";
+            if (ActivityCompat.checkSelfPermission(FindSmellActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                // 获取卫星定位的状态信息
+                GpsStatus gpsStatus = mLocationMgr.getGpsStatus(null);
+                switch (event) {
+                    case GpsStatus.GPS_EVENT_SATELLITE_STATUS: // 周期的报告卫星状态
+                        // 得到所有收到的卫星的信息，包括 卫星的高度角、方位角、信噪比、和伪随机号（及卫星编号）
+                        Iterable<GpsSatellite> satellites = gpsStatus.getSatellites();
+                        for (GpsSatellite satellite : satellites) {
+                            /*
+                             * satellite.getElevation(); //卫星的仰角 (卫星的高度)
+                             * satellite.getAzimuth(); //卫星的方位角
+                             * satellite.getSnr(); //卫星的信噪比
+                             * satellite.getPrn(); //卫星的伪随机码，可以认为就是卫星的编号
+                             * satellite.hasAlmanac(); //卫星是否有年历表
+                             * satellite.hasEphemeris(); //卫星是否有星历表
+                             * satellite.usedInFix(); //卫星是否被用于近期的GPS修正计算
+                             */
+                            Satellite item = new Satellite(); // 创建一个卫星信息对象
+                            int prn_id = satellite.getPrn(); // 获取卫星的编号
+                            item.signal = Math.round(satellite.getSnr()); // 获取卫星的信号
+                            item.elevation = Math.round(satellite.getElevation()); // 获取卫星的仰角
+                            item.azimuth = Math.round(satellite.getAzimuth()); // 获取卫星的方位角
+                            item.time = DateUtil.getNowDateTime(); // 获取当前时间
+                            if (prn_id <= 51) { // 美国的GPS
+                                item.name = "GPS";
+                            } else if (prn_id >= 201 && prn_id <= 235) { // 中国的北斗
+                                item.name = "BEIDOU";
+                            } else if (prn_id >= 65 && prn_id <= 96) { // 俄罗斯的格洛纳斯
+                                item.name = "GLONASS";
+                            } else if (prn_id >= 301 && prn_id <= 336) { // 欧洲的伽利略
+                                item.name = "GALILEO";
+                            } else {
+                                item.name = "未知";
+                            }
+                            Log.d(TAG, "id="+prn_id+", signal="+item.signal+", elevation="+item.elevation+", azimuth="+item.azimuth);
+                            mapSatellite.put(prn_id, item);
                         }
-                        mapSatellite.put(item.seq, item);
-                    }
-                    cv_satellite.setSatelliteMap(mapSatellite);
-                case GpsStatus.GPS_EVENT_FIRST_FIX: // 首次卫星定位
-                case GpsStatus.GPS_EVENT_STARTED: // 卫星导航服务开始
-                case GpsStatus.GPS_EVENT_STOPPED: // 卫星导航服务停止
-                default:
-                    break;
+                        cv_satellite.setSatelliteMap(mapSatellite); // 设置卫星浑天仪
+                    case GpsStatus.GPS_EVENT_FIRST_FIX: // 首次卫星定位
+                    case GpsStatus.GPS_EVENT_STARTED: // 卫星导航服务开始
+                    case GpsStatus.GPS_EVENT_STOPPED: // 卫星导航服务停止
+                    default:
+                        break;
+                }
             }
         }
     };

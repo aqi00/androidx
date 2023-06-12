@@ -4,9 +4,9 @@ public class Satellite {
     public int seq;
     public String nation;
     public String name;
-    public int signal;
-    public int elevation;
-    public int azimuth;
+    public float signal;
+    public float elevation;
+    public float azimuth;
     public String time;
 
     public Satellite() {
