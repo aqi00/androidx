@@ -51,7 +51,7 @@
                     android:layout_height="match_parent"
                     android:layout_alignParentRight="true"
                     android:gravity="center"
-                    android:text="　万"
+                    android:text=" 万"
                     android:textColor="@color/black"
                     android:textSize="17sp" />
             </RelativeLayout>
@@ -92,7 +92,7 @@
                     android:layout_height="match_parent"
                     android:layout_alignParentRight="true"
                     android:gravity="center"
-                    android:text="　％"
+                    android:text=" ％"
                     android:textColor="@color/black"
                     android:textSize="17sp" />
             </RelativeLayout>
@@ -190,7 +190,7 @@
                     android:layout_height="match_parent"
                     android:layout_alignParentRight="true"
                     android:gravity="center"
-                    android:text="　万"
+                    android:text=" 万"
                     android:textColor="@color/black"
                     android:textSize="17sp" />
             </RelativeLayout>
@@ -233,7 +233,7 @@
                     android:layout_height="match_parent"
                     android:layout_alignParentRight="true"
                     android:gravity="center"
-                    android:text="　万"
+                    android:text=" 万"
                     android:textColor="@color/black"
                     android:textSize="17sp" />
             </RelativeLayout>
